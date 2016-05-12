@@ -13,6 +13,9 @@
 		ACAC2ADA1CE428E0004051D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACAC2AD91CE428E0004051D1 /* Assets.xcassets */; };
 		ACAC2ADD1CE428E0004051D1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACAC2ADB1CE428E0004051D1 /* LaunchScreen.storyboard */; };
 		ACAC2AE81CE428E0004051D1 /* recordingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AE71CE428E0004051D1 /* recordingsTests.swift */; };
+		ACAC2AF31CE42916004051D1 /* TimelapseCameraEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */; };
+		ACAC2AF51CE4294C004051D1 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF41CE4294C004051D1 /* Logger.swift */; };
+		ACAC2AF71CE42C03004051D1 /* TimelapseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,9 @@
 		ACAC2AE31CE428E0004051D1 /* recordingsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = recordingsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACAC2AE71CE428E0004051D1 /* recordingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordingsTests.swift; sourceTree = "<group>"; };
 		ACAC2AE91CE428E0004051D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelapseCameraEngine.swift; sourceTree = "<group>"; };
+		ACAC2AF41CE4294C004051D1 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelapseViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +87,11 @@
 				ACAC2AD41CE428E0004051D1 /* ViewController.swift */,
 				ACAC2AD61CE428E0004051D1 /* Main.storyboard */,
 				ACAC2AD91CE428E0004051D1 /* Assets.xcassets */,
+				ACAC2AF41CE4294C004051D1 /* Logger.swift */,
 				ACAC2ADB1CE428E0004051D1 /* LaunchScreen.storyboard */,
 				ACAC2ADE1CE428E0004051D1 /* Info.plist */,
+				ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */,
+				ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */,
 			);
 			path = recordings;
 			sourceTree = "<group>";
@@ -199,6 +208,9 @@
 			files = (
 				ACAC2AD51CE428E0004051D1 /* ViewController.swift in Sources */,
 				ACAC2AD31CE428E0004051D1 /* AppDelegate.swift in Sources */,
+				ACAC2AF71CE42C03004051D1 /* TimelapseViewController.swift in Sources */,
+				ACAC2AF31CE42916004051D1 /* TimelapseCameraEngine.swift in Sources */,
+				ACAC2AF51CE4294C004051D1 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,7 +289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -316,7 +328,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
