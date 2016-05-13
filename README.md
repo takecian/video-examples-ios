@@ -6,3 +6,8 @@ iOS App project shows examples related to video recording/editting.
 
 - Timelapse
 
+## Environment
+
+Xcode 7.3
+Swift 2.2
+
