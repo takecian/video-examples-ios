@@ -11,7 +11,7 @@ import AVFoundation
 
 class TimelapseViewController: UIViewController {
 
-    var startButton, stopButton, backButton : UIButton!
+    var startButton, stopButton, backButton: UIButton!
     var isRecording = false
     let cameraEngine = TimelapseCameraEngine()
 
@@ -65,7 +65,7 @@ class TimelapseViewController: UIViewController {
         backButton.layer.masksToBounds = true
         backButton.setTitle("back", forState: .Normal)
         backButton.layer.cornerRadius = 20.0
-        backButton.addTarget(self, action: #selector(TimelapseViewController.onClickPauseButton(_:)), forControlEvents: .TouchUpInside)
+        backButton.addTarget(self, action: #selector(TimelapseViewController.onClickBackButton(_:)), forControlEvents: .TouchUpInside)
         
         view.addSubview(startButton)
         view.addSubview(stopButton);
@@ -80,7 +80,7 @@ class TimelapseViewController: UIViewController {
         }
     }
     
-    func onClickPauseButton(sender: UIButton){
+    func onClickBackButton(sender: UIButton){
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     

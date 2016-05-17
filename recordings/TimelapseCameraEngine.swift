@@ -12,7 +12,7 @@ import AssetsLibrary
 
 class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate{
 
-    class TimeLapseVideoWriter : NSObject{
+    class TimeLapseVideoWriter : NSObject {
         var fileWriter: AVAssetWriter!
         var videoInput: AVAssetWriterInput!
         var audioInput: AVAssetWriterInput!
@@ -72,7 +72,7 @@ class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDele
     
     let captureSession = AVCaptureSession()
     var isCapturing = false
-    let skipFrame = 5
+    let skipFrameSize = 5
 
     private let videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
     private let audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
@@ -83,8 +83,23 @@ class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDele
     
     private let recordingQueue = dispatch_queue_create("com.takecian.RecordingQueue", DISPATCH_QUEUE_SERIAL)
 
-    private var currentFrame = 0
+    private var currentSkipCount = 0
     private var lasttimeStamp = CMTimeMake(0, 0)
+    
+    private var filePath: String {
+        get {
+            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+            let documentsDirectory = paths[0] as String
+            let filePath : String = "\(documentsDirectory)/video.mov"
+            return filePath
+        }
+    }
+    
+    private var filePathUrl: NSURL {
+        get {
+            return NSURL(fileURLWithPath: filePath)
+        }
+    }
     
     func startup(){
         videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 30)
@@ -116,6 +131,7 @@ class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDele
             kCVPixelBufferPixelFormatTypeKey : Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
         ]
         captureSession.addOutput(videoDataOutput)
+        captureSession.sessionPreset = AVCaptureSessionPresetiFrame1280x720
         
         height = videoDataOutput.videoSettings["Height"] as! Int!
         width = videoDataOutput.videoSettings["Width"] as! Int!
@@ -187,10 +203,10 @@ class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDele
             return
         }
         
-        currentFrame += 1
-        guard currentFrame == skipFrame else { return }
+        currentSkipCount += 1
+        guard currentSkipCount == skipFrameSize else { return }
+        currentSkipCount = 0
         
-        currentFrame = 0
         var buffer = sampleBuffer
         if lasttimeStamp.value == 0 {
             lasttimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
@@ -200,21 +216,6 @@ class TimelapseCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDele
         }
         Logger.log("write")
         videoWriter?.write(buffer, isVideo: isVideo)
-    }
-    
-    var filePath: String {
-        get {
-            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-            let documentsDirectory = paths[0] as String
-            let filePath : String = "\(documentsDirectory)/video.mov"
-            return filePath
-        }
-    }
-    
-    var filePathUrl: NSURL {
-        get {
-            return NSURL(fileURLWithPath: filePath)
-        }
     }
     
     private func setTimeStamp(sample: CMSampleBufferRef, newTime: CMTime) -> CMSampleBufferRef {

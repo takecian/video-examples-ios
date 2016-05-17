@@ -16,6 +16,8 @@
 		ACAC2AF31CE42916004051D1 /* TimelapseCameraEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */; };
 		ACAC2AF51CE4294C004051D1 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF41CE4294C004051D1 /* Logger.swift */; };
 		ACAC2AF71CE42C03004051D1 /* TimelapseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */; };
+		ACAC2AFB1CEB0501004051D1 /* VineCameraEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AF91CEB0501004051D1 /* VineCameraEngine.swift */; };
+		ACAC2AFC1CEB0501004051D1 /* VineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AFA1CEB0501004051D1 /* VineViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +44,8 @@
 		ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelapseCameraEngine.swift; sourceTree = "<group>"; };
 		ACAC2AF41CE4294C004051D1 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelapseViewController.swift; sourceTree = "<group>"; };
+		ACAC2AF91CEB0501004051D1 /* VineCameraEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VineCameraEngine.swift; sourceTree = "<group>"; };
+		ACAC2AFA1CEB0501004051D1 /* VineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VineViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +96,8 @@
 				ACAC2ADE1CE428E0004051D1 /* Info.plist */,
 				ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */,
 				ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */,
+				ACAC2AF91CEB0501004051D1 /* VineCameraEngine.swift */,
+				ACAC2AFA1CEB0501004051D1 /* VineViewController.swift */,
 			);
 			path = recordings;
 			sourceTree = "<group>";
@@ -207,9 +213,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACAC2AD51CE428E0004051D1 /* ViewController.swift in Sources */,
+				ACAC2AFC1CEB0501004051D1 /* VineViewController.swift in Sources */,
 				ACAC2AD31CE428E0004051D1 /* AppDelegate.swift in Sources */,
 				ACAC2AF71CE42C03004051D1 /* TimelapseViewController.swift in Sources */,
 				ACAC2AF31CE42916004051D1 /* TimelapseCameraEngine.swift in Sources */,
+				ACAC2AFB1CEB0501004051D1 /* VineCameraEngine.swift in Sources */,
 				ACAC2AF51CE4294C004051D1 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

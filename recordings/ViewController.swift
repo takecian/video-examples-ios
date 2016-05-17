@@ -19,23 +19,42 @@ class ViewController: UIViewController {
         tableview.delegate = self
         tableview.dataSource = self
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        if let path = tableview.indexPathForSelectedRow {
+            tableview.deselectRowAtIndexPath(path, animated: true)
+        }
+    }
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableview.dequeueReusableCellWithIdentifier("Cell")!
         
-        cell.textLabel?.text = "Timelapse"
+        switch indexPath.row {
+        case 0:
+            cell.textLabel?.text = "Timelapse"
+        default:
+            cell.textLabel?.text = "Vine style"
+        }
         
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let vc = TimelapseViewController()
-        self.presentViewController(vc, animated: true, completion: nil)
+        
+        switch indexPath.row {
+        case 0:
+            let vc = TimelapseViewController()
+            presentViewController(vc, animated: true, completion: nil)
+        default:
+            let vc = VineViewController()
+            presentViewController(vc, animated: true, completion: nil)
+        }
     }
 }
