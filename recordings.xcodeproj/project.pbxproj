@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC5D2B691D1927E900E8C873 /* SlowCameraEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5D2B671D1927E900E8C873 /* SlowCameraEngine.swift */; };
+		AC5D2B6A1D1927E900E8C873 /* SlowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5D2B681D1927E900E8C873 /* SlowViewController.swift */; };
 		ACAC2AD31CE428E0004051D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AD21CE428E0004051D1 /* AppDelegate.swift */; };
 		ACAC2AD51CE428E0004051D1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAC2AD41CE428E0004051D1 /* ViewController.swift */; };
 		ACAC2AD81CE428E0004051D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACAC2AD61CE428E0004051D1 /* Main.storyboard */; };
@@ -31,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AC5D2B671D1927E900E8C873 /* SlowCameraEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlowCameraEngine.swift; sourceTree = "<group>"; };
+		AC5D2B681D1927E900E8C873 /* SlowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlowViewController.swift; sourceTree = "<group>"; };
 		ACAC2ACF1CE428E0004051D1 /* recordings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recordings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACAC2AD21CE428E0004051D1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACAC2AD41CE428E0004051D1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -94,6 +98,8 @@
 				ACAC2AF41CE4294C004051D1 /* Logger.swift */,
 				ACAC2ADB1CE428E0004051D1 /* LaunchScreen.storyboard */,
 				ACAC2ADE1CE428E0004051D1 /* Info.plist */,
+				AC5D2B671D1927E900E8C873 /* SlowCameraEngine.swift */,
+				AC5D2B681D1927E900E8C873 /* SlowViewController.swift */,
 				ACAC2AF61CE42C03004051D1 /* TimelapseViewController.swift */,
 				ACAC2AF21CE42916004051D1 /* TimelapseCameraEngine.swift */,
 				ACAC2AF91CEB0501004051D1 /* VineCameraEngine.swift */,
@@ -217,7 +223,9 @@
 				ACAC2AD31CE428E0004051D1 /* AppDelegate.swift in Sources */,
 				ACAC2AF71CE42C03004051D1 /* TimelapseViewController.swift in Sources */,
 				ACAC2AF31CE42916004051D1 /* TimelapseCameraEngine.swift in Sources */,
+				AC5D2B691D1927E900E8C873 /* SlowCameraEngine.swift in Sources */,
 				ACAC2AFB1CEB0501004051D1 /* VineCameraEngine.swift in Sources */,
+				AC5D2B6A1D1927E900E8C873 /* SlowViewController.swift in Sources */,
 				ACAC2AF51CE4294C004051D1 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,6 +416,7 @@
 				ACAC2AEE1CE428E0004051D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		ACAC2AEF1CE428E0004051D1 /* Build configuration list for PBXNativeTarget "recordingsTests" */ = {
 			isa = XCConfigurationList;
@@ -416,6 +425,7 @@
 				ACAC2AF11CE428E0004051D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

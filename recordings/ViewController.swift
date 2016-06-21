@@ -30,7 +30,7 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -39,6 +39,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.row {
         case 0:
             cell.textLabel?.text = "Timelapse"
+        case 1:
+            cell.textLabel?.text = "Slow motion"
         default:
             cell.textLabel?.text = "Vine style"
         }
@@ -51,6 +53,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.row {
         case 0:
             let vc = TimelapseViewController()
+            presentViewController(vc, animated: true, completion: nil)
+        case 1:
+            let vc = SlowViewController()
             presentViewController(vc, animated: true, completion: nil)
         default:
             let vc = VineViewController()
