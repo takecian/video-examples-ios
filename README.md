@@ -10,6 +10,6 @@ iOS App project shows examples related to video recording/editting.
 
 ## Environment
 
-Xcode 7.3
-Swift 2.2
+Xcode 8.0
+Swift 3
 
