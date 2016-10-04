@@ -17,56 +17,56 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         var videoInput: AVAssetWriterInput!
         var audioInput: AVAssetWriterInput!
         
-        init(fileUrl:NSURL!, height:Int, width:Int, channels:Int, samples:Float64){
-            fileWriter = try? AVAssetWriter(URL: fileUrl, fileType: AVFileTypeQuickTimeMovie)
+        init(fileUrl:URL!, height:Int, width:Int, channels:Int, samples:Float64){
+            fileWriter = try? AVAssetWriter(outputURL: fileUrl, fileType: AVFileTypeQuickTimeMovie)
             
             let videoOutputSettings: Dictionary<String, AnyObject> = [
-                AVVideoCodecKey : AVVideoCodecH264,
-                AVVideoWidthKey : width,
-                AVVideoHeightKey : height
+                AVVideoCodecKey : AVVideoCodecH264 as AnyObject,
+                AVVideoWidthKey : width as AnyObject,
+                AVVideoHeightKey : height as AnyObject
             ]
             videoInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoOutputSettings)
             videoInput.expectsMediaDataInRealTime = true
-            videoInput.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/2)
-            fileWriter.addInput(videoInput)
+            videoInput.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI)/2)
+            fileWriter.add(videoInput)
             
             let audioOutputSettings: Dictionary<String, AnyObject> = [
-                AVFormatIDKey : Int(kAudioFormatMPEG4AAC),
-                AVNumberOfChannelsKey : channels,
-                AVSampleRateKey : samples,
-                AVEncoderBitRateKey : 128000
+                AVFormatIDKey : Int(kAudioFormatMPEG4AAC) as AnyObject,
+                AVNumberOfChannelsKey : channels as AnyObject,
+                AVSampleRateKey : samples as AnyObject,
+                AVEncoderBitRateKey : 128000 as AnyObject
             ]
             audioInput = AVAssetWriterInput(mediaType: AVMediaTypeAudio, outputSettings: audioOutputSettings)
             audioInput.expectsMediaDataInRealTime = true
-            fileWriter.addInput(audioInput)
+            fileWriter.add(audioInput)
         }
         
-        func write(sample: CMSampleBufferRef, isVideo: Bool){
+        func write(_ sample: CMSampleBuffer, isVideo: Bool){
             if CMSampleBufferDataIsReady(sample) {
-                if fileWriter.status == AVAssetWriterStatus.Unknown {
+                if fileWriter.status == AVAssetWriterStatus.unknown {
                     Logger.log("Start writing, isVideo = \(isVideo), status = \(fileWriter.status.rawValue)")
                     let startTime = CMSampleBufferGetPresentationTimeStamp(sample)
                     fileWriter.startWriting()
-                    fileWriter.startSessionAtSourceTime(startTime)
+                    fileWriter.startSession(atSourceTime: startTime)
                 }
-                if fileWriter.status == AVAssetWriterStatus.Failed {
+                if fileWriter.status == AVAssetWriterStatus.failed {
                     Logger.log("Error occured, isVideo = \(isVideo), status = \(fileWriter.status.rawValue), \(fileWriter.error!.localizedDescription)")
                     return
                 }
                 if isVideo {
-                    if videoInput.readyForMoreMediaData {
-                        videoInput.appendSampleBuffer(sample)
+                    if videoInput.isReadyForMoreMediaData {
+                        videoInput.append(sample)
                     }
                 }else{
-                    if audioInput.readyForMoreMediaData {
-                        audioInput.appendSampleBuffer(sample)
+                    if audioInput.isReadyForMoreMediaData {
+                        audioInput.append(sample)
                     }
                 }
             }
         }
         
-        func finish(callback: Void -> Void){
-            fileWriter.finishWritingWithCompletionHandler(callback)
+        func finish(_ callback: @escaping (Void) -> Void){
+            fileWriter.finishWriting(completionHandler: callback)
         }
     }
     
@@ -74,29 +74,29 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     var isCapturing = false
     let slowRatio = 2
     
-    private let videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-    private let audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
-    private var videoWriter : SlowVideoWriter?
+    fileprivate let videoDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+    fileprivate let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+    fileprivate var videoWriter : SlowVideoWriter?
     
-    private var height = 0
-    private var width = 0
+    fileprivate var height = 0
+    fileprivate var width = 0
     
-    private let recordingQueue = dispatch_queue_create("com.takecian.RecordingQueue", DISPATCH_QUEUE_SERIAL)
+    fileprivate let recordingQueue = DispatchQueue(label: "com.takecian.RecordingQueue", attributes: [])
 
-    private var currentFrameCount: Int64 = 0
+    fileprivate var currentFrameCount: Int64 = 0
     
-    private var filePath: String {
+    fileprivate var filePath: String {
         get {
-            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let documentsDirectory = paths[0] as String
             let filePath : String = "\(documentsDirectory)/video.mov"
             return filePath
         }
     }
     
-    private var filePathUrl: NSURL {
+    fileprivate var filePathUrl: URL {
         get {
-            return NSURL(fileURLWithPath: filePath)
+            return URL(fileURLWithPath: filePath)
         }
     }
     
@@ -104,13 +104,13 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         var selectedFormat: AVCaptureDeviceFormat?
         var maxWidth: Int32 = 0
         
-        for format in videoDevice.formats {
-            for range in format.videoSupportedFrameRateRanges {
+        for format in (videoDevice?.formats)! {
+            for range in (format as AnyObject).videoSupportedFrameRateRanges {
                 if #available(iOS 9.0, *) {
-                    let desc = format.formatDescription!
+                    let desc = (format as AnyObject).formatDescription!
                     let dimensions = CMVideoFormatDescriptionGetDimensions(desc)
                     let width = dimensions.width
-                    if 60 <= range.maxFrameRate  && width >= maxWidth {
+                    if 60 <= (range as AnyObject).maxFrameRate  && width >= maxWidth {
                         selectedFormat = format as? AVCaptureDeviceFormat
                         maxWidth = width
                     }
@@ -120,10 +120,10 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         
         if let format = selectedFormat {
             do {
-                try videoDevice.lockForConfiguration()
-                videoDevice.activeFormat = format
-                videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 60)
-                videoDevice.unlockForConfiguration()
+                try videoDevice?.lockForConfiguration()
+                videoDevice?.activeFormat = format
+                videoDevice?.activeVideoMinFrameDuration = CMTimeMake(1, 60)
+                videoDevice?.unlockForConfiguration()
             } catch {
                 
             }
@@ -140,7 +140,7 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         videoDataOutput.setSampleBufferDelegate(self, queue: recordingQueue)
         videoDataOutput.alwaysDiscardsLateVideoFrames = true
         videoDataOutput.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey : Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
+            kCVPixelBufferPixelFormatTypeKey as AnyHashable : Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
         ]
         captureSession.addOutput(videoDataOutput)
         captureSession.sessionPreset = AVCaptureSessionPresetiFrame1280x720
@@ -170,13 +170,13 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     func stop(){
         if isCapturing{
             isCapturing = false
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.async(execute: { () -> Void in
                 Logger.log("in")
                 self.videoWriter!.finish { () -> Void in
                     Logger.log("Recording finished.")
                     self.videoWriter = nil
                     let assetsLib = ALAssetsLibrary()
-                    assetsLib.writeVideoAtPathToSavedPhotosAlbum(self.filePathUrl, completionBlock: {
+                    assetsLib.writeVideoAtPath(toSavedPhotosAlbum: self.filePathUrl, completionBlock: {
                         (nsurl, error) -> Void in
                         Logger.log("Transfer video to library finished.")
                     })
@@ -185,16 +185,16 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         }
     }
     
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!){
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!){
         guard isCapturing else { return }
         
         let isVideo = captureOutput is AVCaptureVideoDataOutput
             
         if videoWriter == nil && !isVideo {
-            let fileManager = NSFileManager()
-            if fileManager.fileExistsAtPath(filePath) {
+            let fileManager = FileManager()
+            if fileManager.fileExists(atPath: filePath) {
                 do {
-                    try fileManager.removeItemAtPath(filePath)
+                    try fileManager.removeItem(atPath: filePath)
                 } catch _ {
                 }
             }
@@ -206,8 +206,8 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
             videoWriter = SlowVideoWriter(
                 fileUrl: filePathUrl,
                 height: height, width: width,
-                channels: Int(asbd.memory.mChannelsPerFrame),
-                samples: asbd.memory.mSampleRate
+                channels: Int((asbd?.pointee.mChannelsPerFrame)!),
+                samples: (asbd?.pointee.mSampleRate)!
             )
         }
         
@@ -223,13 +223,13 @@ class SlowCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         buffer = setTimeStamp(sampleBuffer, newTime: CMTimeAdd(timestamp, CMTimeMake(1 * currentFrameCount, 60)))
 
         Logger.log("write")
-        videoWriter?.write(buffer, isVideo: isVideo)
+        videoWriter?.write(buffer!, isVideo: isVideo)
     }
     
-    private func setTimeStamp(sample: CMSampleBufferRef, newTime: CMTime) -> CMSampleBufferRef {
+    fileprivate func setTimeStamp(_ sample: CMSampleBuffer, newTime: CMTime) -> CMSampleBuffer {
         var count: CMItemCount = 0
         CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
-        var info = [CMSampleTimingInfo](count: count, repeatedValue: CMSampleTimingInfo(duration: CMTimeMake(0, 0), presentationTimeStamp: CMTimeMake(0, 0), decodeTimeStamp: CMTimeMake(0, 0)))
+        var info = [CMSampleTimingInfo](repeating: CMSampleTimingInfo(duration: CMTimeMake(0, 0), presentationTimeStamp: CMTimeMake(0, 0), decodeTimeStamp: CMTimeMake(0, 0)), count: count)
         CMSampleBufferGetSampleTimingInfoArray(sample, count, &info, &count);
         
         for i in 0..<count {

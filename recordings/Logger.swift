@@ -10,15 +10,15 @@ import Foundation
 
 class Logger{
     
-    class func log(message: String,
+    class func log(_ message: String,
         function: String = #function,
         file: String = #file,
         line: Int = #line) {
             var filename = file
-            if let match = filename.rangeOfString("[^/]*$", options: .RegularExpressionSearch) {
-                filename = filename.substringWithRange(match)
+            if let match = filename.range(of: "[^/]*$", options: .regularExpression) {
+                filename = filename.substring(with: match)
             }
-            print("\(NSDate().timeIntervalSince1970):\(filename):L\(line):\(function) \"\(message)\"")
+            print("\(Date().timeIntervalSince1970):\(filename):L\(line):\(function) \"\(message)\"")
     }
 
 }

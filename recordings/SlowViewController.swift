@@ -21,9 +21,9 @@ class SlowViewController: UIViewController {
         // Do any additional setup after loading the view.
         cameraEngine.startup()
         let videoLayer = AVCaptureVideoPreviewLayer(session: cameraEngine.captureSession)
-        videoLayer.frame = view.bounds
-        videoLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-        view.layer.addSublayer(videoLayer)
+        videoLayer?.frame = view.bounds
+        videoLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+        view.layer.addSublayer(videoLayer!)
         
         setupButton()
     }
@@ -35,64 +35,64 @@ class SlowViewController: UIViewController {
     
 
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIApplication.sharedApplication().idleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        UIApplication.sharedApplication().idleTimerDisabled = false
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     func setupButton(){
-        startButton = UIButton(frame: CGRectMake(20, view.bounds.height - 70, 60 ,50))
-        startButton.backgroundColor = UIColor.redColor()
+        startButton = UIButton(frame: CGRect(x: 20, y: view.bounds.height - 70, width: 60 ,height: 50))
+        startButton.backgroundColor = UIColor.red
         startButton.layer.masksToBounds = true
-        startButton.setTitle("start", forState: .Normal)
+        startButton.setTitle("start", for: UIControlState())
         startButton.layer.cornerRadius = 20.0
-        startButton.addTarget(self, action: #selector(TimelapseViewController.onClickStartButton(_:)), forControlEvents: .TouchUpInside)
+        startButton.addTarget(self, action: #selector(TimelapseViewController.onClickStartButton(_:)), for: .touchUpInside)
         
-        stopButton = UIButton(frame: CGRectMake(100, view.bounds.height - 70, 60, 50))
-        stopButton.backgroundColor = UIColor.grayColor()
+        stopButton = UIButton(frame: CGRect(x: 100, y: view.bounds.height - 70, width: 60, height: 50))
+        stopButton.backgroundColor = UIColor.gray
         stopButton.layer.masksToBounds = true
-        stopButton.setTitle("stop", forState: .Normal)
+        stopButton.setTitle("stop", for: UIControlState())
         stopButton.layer.cornerRadius = 20.0
-        stopButton.addTarget(self, action: #selector(TimelapseViewController.onClickStopButton(_:)), forControlEvents: .TouchUpInside)
+        stopButton.addTarget(self, action: #selector(TimelapseViewController.onClickStopButton(_:)), for: .touchUpInside)
         
-        backButton = UIButton(frame: CGRectMake(20, 50, 60, 50))
-        backButton.backgroundColor = UIColor.grayColor()
+        backButton = UIButton(frame: CGRect(x: 20, y: 50, width: 60, height: 50))
+        backButton.backgroundColor = UIColor.gray
         backButton.layer.masksToBounds = true
-        backButton.setTitle("back", forState: .Normal)
+        backButton.setTitle("back", for: UIControlState())
         backButton.layer.cornerRadius = 20.0
-        backButton.addTarget(self, action: #selector(TimelapseViewController.onClickBackButton(_:)), forControlEvents: .TouchUpInside)
+        backButton.addTarget(self, action: #selector(TimelapseViewController.onClickBackButton(_:)), for: .touchUpInside)
         
         view.addSubview(startButton)
         view.addSubview(stopButton);
         view.addSubview(backButton);
     }
     
-    func onClickStartButton(sender: UIButton){
+    func onClickStartButton(_ sender: UIButton){
         if !cameraEngine.isCapturing {
             cameraEngine.start()
-            changeButtonColor(startButton, color: UIColor.grayColor())
-            changeButtonColor(stopButton, color: UIColor.redColor())
+            changeButtonColor(startButton, color: UIColor.gray)
+            changeButtonColor(stopButton, color: UIColor.red)
         }
     }
     
-    func onClickBackButton(sender: UIButton){
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func onClickBackButton(_ sender: UIButton){
+        self.dismiss(animated: true, completion: nil)
     }
     
-    func onClickStopButton(sender: UIButton){
+    func onClickStopButton(_ sender: UIButton){
         if cameraEngine.isCapturing {
             cameraEngine.stop()
-            changeButtonColor(startButton, color: UIColor.redColor())
-            changeButtonColor(stopButton, color: UIColor.grayColor())
+            changeButtonColor(startButton, color: UIColor.red)
+            changeButtonColor(stopButton, color: UIColor.gray)
         }
     }
     
-    func changeButtonColor(target: UIButton, color: UIColor){
+    func changeButtonColor(_ target: UIButton, color: UIColor){
         target.backgroundColor = color
     }
 }

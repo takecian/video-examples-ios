@@ -17,62 +17,62 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         var videoInput: AVAssetWriterInput!
         var audioInput: AVAssetWriterInput!
         
-        init(fileUrl:NSURL!, height:Int, width:Int, channels:Int, samples:Float64){
-            fileWriter = try? AVAssetWriter(URL: fileUrl, fileType: AVFileTypeQuickTimeMovie)
+        init(fileUrl:URL!, height:Int, width:Int, channels:Int, samples:Float64){
+            fileWriter = try? AVAssetWriter(outputURL: fileUrl, fileType: AVFileTypeQuickTimeMovie)
             
             let videoOutputSettings: Dictionary<String, AnyObject> = [
-                AVVideoCodecKey : AVVideoCodecH264,
-                AVVideoWidthKey : width,
-                AVVideoHeightKey : height
+                AVVideoCodecKey : AVVideoCodecH264 as AnyObject,
+                AVVideoWidthKey : width as AnyObject,
+                AVVideoHeightKey : height as AnyObject
             ]
             videoInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoOutputSettings)
             videoInput.expectsMediaDataInRealTime = true
-            videoInput.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/2)
-            fileWriter.addInput(videoInput)
+            videoInput.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI)/2)
+            fileWriter.add(videoInput)
             
             let audioOutputSettings: Dictionary<String, AnyObject> = [
-                AVFormatIDKey : Int(kAudioFormatMPEG4AAC),
-                AVNumberOfChannelsKey : channels,
-                AVSampleRateKey : samples,
-                AVEncoderBitRateKey : 128000
+                AVFormatIDKey : Int(kAudioFormatMPEG4AAC) as AnyObject,
+                AVNumberOfChannelsKey : channels as AnyObject,
+                AVSampleRateKey : samples as AnyObject,
+                AVEncoderBitRateKey : 128000 as AnyObject
             ]
             audioInput = AVAssetWriterInput(mediaType: AVMediaTypeAudio, outputSettings: audioOutputSettings)
             audioInput.expectsMediaDataInRealTime = true
-            fileWriter.addInput(audioInput)
+            fileWriter.add(audioInput)
         }
         
-        func write(sample: CMSampleBufferRef, isVideo: Bool){
+        func write(_ sample: CMSampleBuffer, isVideo: Bool){
             if CMSampleBufferDataIsReady(sample) {
-                if fileWriter.status == AVAssetWriterStatus.Unknown {
+                if fileWriter.status == AVAssetWriterStatus.unknown {
                     Logger.log("Start writing, isVideo = \(isVideo), status = \(fileWriter.status.rawValue)")
                     let startTime = CMSampleBufferGetPresentationTimeStamp(sample)
                     fileWriter.startWriting()
-                    fileWriter.startSessionAtSourceTime(startTime)
+                    fileWriter.startSession(atSourceTime: startTime)
                 }
-                if fileWriter.status == AVAssetWriterStatus.Failed {
+                if fileWriter.status == AVAssetWriterStatus.failed {
                     Logger.log("Error occured, isVideo = \(isVideo), status = \(fileWriter.status.rawValue), \(fileWriter.error!.localizedDescription)")
                     return
                 }
                 if isVideo {
-                    if videoInput.readyForMoreMediaData {
-                        videoInput.appendSampleBuffer(sample)
+                    if videoInput.isReadyForMoreMediaData {
+                        videoInput.append(sample)
                     }
                 }else{
-                    if audioInput.readyForMoreMediaData {
-                        audioInput.appendSampleBuffer(sample)
+                    if audioInput.isReadyForMoreMediaData {
+                        audioInput.append(sample)
                     }
                 }
             }
         }
         
-        func finish(callback: Void -> Void){
-            fileWriter.finishWritingWithCompletionHandler(callback)
+        func finish(_ callback: @escaping (Void) -> Void){
+            fileWriter.finishWriting(completionHandler: callback)
         }
     }
 
     let captureSession = AVCaptureSession()
-    let videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-    let audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
+    let videoDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+    let audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
     var videoWriter : VineVideoWriter?
 
     var height:Int?
@@ -86,12 +86,12 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     var timeOffset = CMTimeMake(0, 0)
     var lastAudioPts: CMTime?
 
-    let lockQueue = dispatch_queue_create("com.takecian.LockQueue", nil)
-    let recordingQueue = dispatch_queue_create("com.takecian.RecordingQueue", DISPATCH_QUEUE_SERIAL)
+    let lockQueue = DispatchQueue(label: "com.takecian.LockQueue", attributes: [])
+    let recordingQueue = DispatchQueue(label: "com.takecian.RecordingQueue", attributes: [])
 
     func startup(){
         // video input
-        videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 30)
+        videoDevice?.activeVideoMinFrameDuration = CMTimeMake(1, 30)
         
       
         do
@@ -118,7 +118,7 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         videoDataOutput.setSampleBufferDelegate(self, queue: recordingQueue)
         videoDataOutput.alwaysDiscardsLateVideoFrames = true
         videoDataOutput.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey : Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
+            kCVPixelBufferPixelFormatTypeKey as AnyHashable : Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
         ]
         captureSession.addOutput(videoDataOutput)
         
@@ -138,7 +138,7 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     }
 
     func start(){
-        dispatch_sync(lockQueue) {
+        lockQueue.sync {
             if !self.isCapturing{
                 Logger.log("in")
                 self.isPaused = false
@@ -150,19 +150,19 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     }
     
     func stop(){
-        dispatch_sync(self.lockQueue) {
+        self.lockQueue.sync {
             if self.isCapturing{
                 self.isCapturing = false
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     Logger.log("in")
                     self.videoWriter!.finish { () -> Void in
                         Logger.log("Recording finished.")
                         self.videoWriter = nil
                         let assetsLib = ALAssetsLibrary()
-                        assetsLib.writeVideoAtPathToSavedPhotosAlbum(self.filePathUrl(), completionBlock: {
+                        assetsLib.writeVideoAtPath(toSavedPhotosAlbum: self.filePathUrl(), completionBlock: {
                             (nsurl, error) -> Void in
                             Logger.log("Transfer video to library finished.")
-                            self.fileIndex++
+                            self.fileIndex += 1
                         })
                     }
                 })
@@ -171,7 +171,7 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     }
     
     func pause(){
-        dispatch_sync(self.lockQueue) {
+        self.lockQueue.sync {
             if self.isCapturing{
                 Logger.log("in")
                 self.isPaused = true
@@ -181,7 +181,7 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
     }
     
     func resume(){
-        dispatch_sync(self.lockQueue) {
+        self.lockQueue.sync {
             if self.isCapturing{
                 Logger.log("in")
                 self.isPaused = false
@@ -189,8 +189,8 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         }
     }
     
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!){
-        dispatch_sync(self.lockQueue) {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!){
+        self.lockQueue.sync {
             if !self.isCapturing || self.isPaused {
                 return
             }
@@ -198,10 +198,10 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
             let isVideo = captureOutput is AVCaptureVideoDataOutput
             
             if self.videoWriter == nil && !isVideo {
-                let fileManager = NSFileManager()
-                if fileManager.fileExistsAtPath(self.filePath()) {
+                let fileManager = FileManager()
+                if fileManager.fileExists(atPath: self.filePath()) {
                     do {
-                        try fileManager.removeItemAtPath(self.filePath())
+                        try fileManager.removeItem(atPath: self.filePath())
                     } catch _ {
                     }
                 }
@@ -213,8 +213,8 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
                 self.videoWriter = VineVideoWriter(
                     fileUrl: self.filePathUrl(),
                     height: self.height!, width: self.width!,
-                    channels: Int(asbd.memory.mChannelsPerFrame),
-                    samples: asbd.memory.mSampleRate
+                    channels: Int((asbd?.pointee.mChannelsPerFrame)!),
+                    samples: (asbd?.pointee.mSampleRate)!
                 )
             }
             
@@ -225,10 +225,10 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
 
                 var pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
-                let isAudioPtsValid = self.lastAudioPts!.flags.intersect(CMTimeFlags.Valid)
+                let isAudioPtsValid = self.lastAudioPts!.flags.intersection(CMTimeFlags.valid)
                 if isAudioPtsValid.rawValue != 0 {
                     Logger.log("isAudioPtsValid is valid")
-                    let isTimeOffsetPtsValid = self.timeOffset.flags.intersect(CMTimeFlags.Valid)
+                    let isTimeOffsetPtsValid = self.timeOffset.flags.intersection(CMTimeFlags.valid)
                     if isTimeOffsetPtsValid.rawValue != 0 {
                         Logger.log("isTimeOffsetPtsValid is valid")
                         pts = CMTimeSubtract(pts, self.timeOffset);
@@ -256,8 +256,8 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
             }
 
             if !isVideo {
-                var pts = CMSampleBufferGetPresentationTimeStamp(buffer)
-                let dur = CMSampleBufferGetDuration(buffer)
+                var pts = CMSampleBufferGetPresentationTimeStamp(buffer!)
+                let dur = CMSampleBufferGetDuration(buffer!)
                 if (dur.value > 0)
                 {
                     pts = CMTimeAdd(pts, dur)
@@ -265,25 +265,25 @@ class VineCameraEngine : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
                 self.lastAudioPts = pts
             }
             
-            self.videoWriter?.write(buffer, isVideo: isVideo)
+            self.videoWriter?.write(buffer!, isVideo: isVideo)
         }
     }
     
     func filePath() -> String {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let documentsDirectory = paths[0] as String
         let filePath : String = "\(documentsDirectory)/video\(self.fileIndex).mp4"
         return filePath
     }
     
-    func filePathUrl() -> NSURL! {
-        return NSURL(fileURLWithPath: self.filePath())
+    func filePathUrl() -> URL! {
+        return URL(fileURLWithPath: self.filePath())
     }
     
-    func ajustTimeStamp(sample: CMSampleBufferRef, offset: CMTime) -> CMSampleBufferRef {
+    func ajustTimeStamp(_ sample: CMSampleBuffer, offset: CMTime) -> CMSampleBuffer {
         var count: CMItemCount = 0
         CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
-        var info = [CMSampleTimingInfo](count: count, repeatedValue: CMSampleTimingInfo(duration: CMTimeMake(0, 0), presentationTimeStamp: CMTimeMake(0, 0), decodeTimeStamp: CMTimeMake(0, 0)))
+        var info = [CMSampleTimingInfo](repeating: CMSampleTimingInfo(duration: CMTimeMake(0, 0), presentationTimeStamp: CMTimeMake(0, 0), decodeTimeStamp: CMTimeMake(0, 0)), count: count)
         CMSampleBufferGetSampleTimingInfoArray(sample, count, &info, &count);
 
         for i in 0..<count {

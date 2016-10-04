@@ -167,9 +167,13 @@
 				TargetAttributes = {
 					ACAC2ACE1CE428E0004051D1 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 4MN522WN87;
+						LastSwiftMigration = 0800;
+						ProvisioningStyle = Manual;
 					};
 					ACAC2AE21CE428E0004051D1 = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0800;
 						TestTargetID = ACAC2ACE1CE428E0004051D1;
 					};
 				};
@@ -355,10 +359,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 4MN522WN87;
 				INFOPLIST_FILE = recordings/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.takecian.recordings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "71eef502-2977-4f5b-afad-d9188c17a82b";
+				PROVISIONING_PROFILE_SPECIFIER = "Debug for Device";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -366,10 +374,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = recordings/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.takecian.recordings;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -381,6 +391,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.takecian.recordingsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/recordings.app/recordings";
 			};
 			name = Debug;
@@ -393,6 +404,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.takecian.recordingsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/recordings.app/recordings";
 			};
 			name = Release;
